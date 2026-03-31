@@ -15,24 +15,68 @@ A **Retrieval Augmented Generation (RAG)** application built with Streamlit, Chr
 
 ## 🛠️ Technology Stack
 
-- **Frontend**: Streamlit (Python web framework)
-- **Vector Database**: ChromaDB v0.6.3
-- **LLM Backend**: Ollama (local LLM serving)
-- **Embeddings**: mxbai-embed-large model
-- **Document Processing**: LlamaIndex framework
-- **Containerization**: Docker & Docker Compose
+### Core Framework
+- **Frontend**: Streamlit v1.31.1 (Python web framework for rapid prototyping)
+- **Backend**: Python 3.9+ with async/await support
+- **Vector Database**: ChromaDB v0.6.3 (High-performance vector similarity search)
+- **Document Processing**: LlamaIndex v0.12.11 (RAG orchestration framework)
+- **Containerization**: Docker & Docker Compose (Scalable deployment)
+
+### AI/ML Components
+- **LLM Orchestration**: Ollama v0.6.1 (Local LLM serving platform)
+- **Primary LLM**: **qwen2.5-coder:1.5b** (1.5B parameters)
+  - **Purpose**: Main conversational AI for question answering
+  - **Strengths**: Code understanding, technical documentation, multilingual support
+  - **Use Case**: Generating human-like responses to user queries
+- **Fallback LLM**: **deepseek-r1:latest** (Larger model for complex queries)
+  - **Purpose**: Advanced reasoning for complex document analysis
+  - **Strengths**: Deep reasoning, mathematical concepts, research tasks
+  - **Use Case**: Complex technical questions requiring multi-step reasoning
+
+### Embedding & Vector Processing
+- **Embedding Model**: **mxbai-embed-large** (Large-scale embeddings)
+  - **Purpose**: Convert documents and queries into 1024-dimensional vectors
+  - **Strengths**: High-quality semantic understanding, multilingual support
+  - **Use Case**: Document similarity search and semantic retrieval
+- **Vector Operations**: FAISS-compatible similarity search with cosine distance
+
+### Document Processing Pipeline
+- **PDF Processing**: pypdf v4.1.0 (Modern PDF parsing, Unicode support)
+- **DOCX Processing**: python-docx v1.1.0 + docx2txt v0.8 (Dual extraction methods)
+- **Text Processing**: Custom chunking with configurable overlap
+- **Data Analysis**: pandas v2.2.1 (Collection analytics and statistics)
+
+### Supporting Libraries
+- **HTTP Client**: requests v2.32.0 (API communications)
+- **Environment**: python-dotenv v1.0.1 (Configuration management)
+- **Utilities**: numpy v1.26.4 (Mathematical operations)
+- **Logging**: Enhanced error tracking and debugging
 
 ## 📋 Prerequisites
 
 Before running this application, ensure you have:
 
-1. **Python 3.9+** installed
-2. **Ollama** installed and running locally
-3. **Required Models** downloaded:
+1. **Python 3.9+** installed with pip package manager
+2. **Ollama v0.6.1+** installed and running locally
    ```bash
-   ollama pull qwen2.5-coder:1.5b
-   ollama pull mxbai-embed-large:latest
+   # Install Ollama (if not already installed)
+   curl -fsSL https://ollama.com/install.sh | sh
    ```
+3. **Required AI Models** downloaded via Ollama:
+   ```bash
+   # Primary LLM for conversational AI
+   ollama pull qwen2.5-coder:1.5b
+   
+   # Embedding model for document vectorization  
+   ollama pull mxbai-embed-large:latest
+   
+   # Optional: Advanced LLM for complex reasoning
+   ollama pull deepseek-r1:latest
+   ```
+4. **System Requirements**:
+   - **RAM**: 8GB minimum (16GB recommended for larger models)
+   - **Storage**: 5GB free space for models and vector database
+   - **CPU**: Multi-core processor (GPU optional but recommended)
 
 ## 🚀 Quick Start
 
@@ -95,20 +139,38 @@ Before running this application, ensure you have:
    - Includes sample documents about Mars, Saturn, Solar System
    - Try example queries about planetary science
 
-## ⚙️ Configuration
+## ⚙️ RAG Architecture & Model Configuration
 
-### Model Settings
+### Document Processing Pipeline
+```
+PDF/DOCX/TXT → Text Extraction → Chunking (256 chars) → Embeddings → ChromaDB Storage
+```
+
+### Query Processing Flow  
+```
+User Query → Embedding → Vector Search → Context Retrieval → LLM Generation → Response
+```
+
+### Model Configuration
 - **LLM Model**: qwen2.5-coder:1.5b (or deepseek-r1:latest)
+  - **Context Window**: 4,096 tokens
+  - **Output Tokens**: 256 tokens per response
+  - **Temperature**: Optimized for factual responses
 - **Embedding Model**: mxbai-embed-large:latest
-- **Chunk Size**: 256 characters (configurable)
-- **Similarity Top-K**: 4 documents retrieved per query
+  - **Dimensions**: 1024-dimensional vectors
+  - **Max Input**: 512 tokens per chunk
+  - **Similarity**: Cosine distance matching
+- **Chunk Configuration**: 
+  - **Size**: 256 characters (configurable 64-512)
+  - **Overlap**: 32 characters (prevents context loss)
+  - **Top-K Retrieval**: 4 most similar documents per query
 
 ### Advanced Settings
 Access the "Advanced Settings" panel to modify:
 - Document parsing chunk size and overlap
-- Number of similar documents retrieved
+- Number of similar documents retrieved (similarity_top_k)
 - LLM context window and output length
-- Search similarity thresholds
+- Search similarity thresholds and embedding parameters
 
 ## 📱 API Endpoints
 
